@@ -5,6 +5,6 @@ Aufruf im Verzeichnis wo Zint.EXE und die Testbarcode-Datei liegt:
 ```Powershell
 New-BarcodeHTMLPage -FilePath .\TestBarcodes.Txt -HtmlFilePath .\Sample.Html
 
-# erzeugt Seite öffnen
+# erzeugte Seite öffnen
 Start .\Sample.Html
 ```
