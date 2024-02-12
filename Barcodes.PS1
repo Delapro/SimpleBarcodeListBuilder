@@ -13,7 +13,9 @@ Function Get-BarcodeInfo ($barcode) {
     ']Q1' {$type='QR Code'}         # Model 2 (QR Code 2005), ECI protocol **not** implemented.
     ']d0' {$type='Data Matrix'}     # ECC 000-140.
     ']d1' {$type='Data Matrix'}     # ECC 200.
-    ']d2' {$type='Data Matrix'}     # ECC 200, FNC1 in first or fifth position.
+    ']d2' {$type='Data Matrix GS1'}     # ECC 200, FNC1 in first or fifth position.  GS1 Datamatrix
+    ']d7' {$type='Data Matrix Rectangular Extension (DMRE)'}  # siehe https://github.com/zxing-cpp/zxing-cpp/issues/346#issuecomment-1164127712
+    ']d8' {$type='Data Matrix Rectangular Extension (DMRE) GS1'}  # GS1 noch nicht bestätigt, aber analog zu ]d2 von den Einstellungen
     ']e0' {$type='GS1'}             # GS1 DataBar / GS1 DataBar Limited / GS1 Databar Expanded
   }
   [PSCustomObject]@{Barcode=$barcode.SubString(3);AIM=$barcode.SubString(0,3);Type=$type;RawBarcode=$barcode}
@@ -22,16 +24,32 @@ Function Get-BarcodeInfo ($barcode) {
 # gibt ein Array mit den Parametern für den Zint.exe-Aufruf zurück passend zum übergebenen Barcode und Dateinamen
 Function Get-ZintCLArguments ($barcodeInfo, $filePath) {
 
+  $gs1 = $null
+  $dmre= $null
+
   switch ($barcodeInfo.AIM) {
     ']C0'  {$type=20}
     ']d1'  {$type=71}
+    ']d2'  {$type=71; $gs1=$true}
+    ']d7'  {$type=71; $dmre=$true}
+    ']d8'  {$type=71; $dmre=$true; $gs1=$true}
   }
 
   '-o'
   $filePath
   "--barcode=$type"
+  If ($gs1) {
+	"--gs1"
+        # TODO: AIs bei $barcodeInfo.barcode müssen noch mit [] umfasst werden
+        # braucht z. B. [01]04223323323236
+	# RS/GS noch abklären, wie die angegeben werden
+  }
   If ($type -eq 71) {
+	If ($dmre) {
+	  "--dmre" # sucht sich automatisch die passende version, sonst --vers 31-48
+	} else {
 	  "--square"  # erzwingt die Erzeugung von quadratischen Datamatrix Codes
+	}
   }
   '-d'
   "$($barcodeInfo.barcode)"
