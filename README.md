@@ -3,6 +3,13 @@ Erzeugt eine HTML-Seite mit SVG-Barcodes welche aus einer Textdatei stammen. Daz
 
 > Hinweis: Die Barcodes müssen mit einem AIM Präfix versehen sein, damit der passende Barcode erzeugt werden kann, außerdem sind nur einfache DataMatrix (]d1) und Code128 (]C0) Varianten aktuell implementiert. Aber der Rumpf steht...
 
+# Anwendung des Powershellskripts
+```Powershell
+Start-BitsTransfer https://raw.githubusercontent.com/Delapro/SimpleBarcodeListBuilder/master/Barcodes.PS1
+. .\Barcodes.PS1
+# nun stehen die Funktionen zur Verfügung
+```
+
 Aufruf im Verzeichnis wo Zint.EXE und die Testbarcode-Datei liegt:
 ```Powershell
 # Funktionen laden
